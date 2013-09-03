@@ -42,7 +42,7 @@ $(function () {
  		 var Memory,CPU ;
 
  		 	function getMemory(){
- 		 		$.getJSON("http://127.0.0.1:3000/myjsonp/memory",function(data){
+ 		 		$.getJSON("myjsonp/memory",function(data){
  		 			console.log("/*****************memory*****************/");	
  		 			console.log("[1]time:"+data.result.time);
  		 			console.log("[2]kbmemfree:"+data.result.kbmemfree);
@@ -58,7 +58,7 @@ $(function () {
  		 		}) 		  		 		
  		 	} 
  		 	function getCPU() {
-				$.getJSON("http://127.0.0.1:3000/myjsonp/cpu",function(data){
+				$.getJSON("myjsonp/cpu",function(data){
 					console.log("/*****************CPU*****************/");
 					console.log("[1]time:"+data.result.time);
 					console.log("[2]CPU_all_%user:"+data.result["CPU_all_%user"]);
@@ -99,7 +99,7 @@ $(function () {
 
 		                          function PC() {
 		                        
-		                        	$.getJSON("http://127.0.0.1:3000/myjsonp/all",function(data){
+		                        	$.getJSON("myjsonp/all",function(data){
 		                        		console.log("memused:"+data.result["%memused"]);	
 		                        		console.log("cpu:"+data.result["CPU_all_%idle"]);	
 		                        		var x = (new Date()).getTime(), // current time
