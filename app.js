@@ -28,39 +28,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
-var result ;
-var result2 ;
+
 var obj ={};
 app.get('/', function (req, res) {
 	res.sendfile(__dirname + '/index.html');
 });
 app.get('/myjsonp/memory', function (req, res) {
-/*
-	var commit ="sar -r 1";
 
-	var	ls = exec(commit);
-
-	
-	res.charset = 'utf-8';
-    res.contentType('text/javascript');
-
-	ls.stdout.on('data', function (data) {
-	//  console.log('stdout: ' + data);
-	  result+=data;
-  
-	});
-
-	ls.stderr.on('data', function (data) {
-	  console.log('stderr: ' + data);
-	 //result+="<li>"+data+"</li>";    
-	});
-
-	ls.on('exit', function (code) {
-	 // console.log('child process exited with code ' + code);
-	 //result+="<li>"+"child process exited with code "+code+"</li>";
-	});
-
-       console.log(result.split(' '))*/
      var obj ={};
 
 		sar(['-r','1','1']).on('stats', function(o){
@@ -88,7 +62,6 @@ app.get('/myjsonp/cpu', function (req, res) {
 	
 app.get('/myjsonp/all', function (req, res) {
 
-
 		sar(['-r','1','1']).on('stats', function(o){
 			console.log(o);
 			obj.result = o;
@@ -98,7 +71,6 @@ app.get('/myjsonp/all', function (req, res) {
 			console.log(o);
 			obj.result = o;
 		});
-
 
   		res.send(obj);
 		res.end(); 	  
