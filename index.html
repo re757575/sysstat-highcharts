@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+ 		 <script src="javascripts/jquery-2.0.2.js"></script>
+ 		 <script src="javascripts/highcharts.js"></script>
+ 		
+    </head>
+    <body>
+        <input type="button" id="get" value="get" ></input>
+        <input type="button" id="stop" value="stop" ></input>
+        <div id="result"></div>
+        <div id="container"></div>
+        <div id="container2"></div>
+
+         <script type="text/javascript">
+$(function () {
+    $(document).ready(function() {
+
+ 		$("#get").click(function(){
+ 			getMemory(); 
+ 			getCPU();	
+ 			start ();
+ 		 })
+ 		 $("#stop").click(function(){
+ 		 	clearTimeout(ID);
+ 		 })
+  });
+    
+});
+ </script>
+ <script type="text/javascript">
+ 		 
+ 		 var ID ;
+ 		 var Memory,CPU ;
+
+ 		 	function getMemory(){
+ 		 		$.getJSON("http://127.0.0.1:3000/myjsonp/memory",function(data){
+ 		 			console.log("/*****************memory*****************/");	
+ 		 			console.log("[1]time:"+data.result.time);
+ 		 			console.log("[2]kbmemfree:"+data.result.kbmemfree);
+ 		 			console.log("[3]%memused:"+data.result["%memused"]);
+ 		 			console.log("[4]kbbuffers:"+data.result.kbbuffers);
+ 		 			console.log("[5]kbcached:"+data.result.kbcached);
+ 		 			console.log("[6]kbcommit:"+data.result.kbcommit);
+ 		 			console.log("[7]%commit:"+data.result["%commit"]);
+ 		 			console.log("[8]kbactive:"+data.result.kbactive);
+ 		 			console.log("[9]kbinact:"+data.result.kbinact);
+					// Memory = setTimeout(getJson, '3000');
+					
+ 		 		}) 		  		 		
+ 		 	} 
+ 		 	function getCPU() {
+				$.getJSON("http://127.0.0.1:3000/myjsonp/cpu",function(data){
+					console.log("/*****************CPU*****************/");
+					console.log("[1]time:"+data.result.time);
+					console.log("[2]CPU_all_%user:"+data.result["CPU_all_%user"]);
+					console.log("[3]CPU_all_%nice:"+data.result["CPU_all_%nice"]);
+					console.log("[4]CPU_all_%system:"+data.result["CPU_all_%system"]);
+					console.log("[5]CPU_all_%iowait:"+data.result["CPU_all_%iowait"]);
+					console.log("[6]CPU_all_%steal:"+data.result["CPU_all_%steal"]);
+					console.log("[7]CPU_all_%idle:"+data.result["CPU_all_%idle"]);	
+
+				}); 		 		
+ 		 	}	 
+
+ 		 	function start (){
+
+		        Highcharts.setOptions({
+		            global: {
+		                useUTC: false
+		            }
+		        });
+
+	    		var chart;
+		        $('#container').highcharts({
+		            chart: {
+		                type: 'line',
+		                animation: Highcharts.svg, // don't animate in old IE
+		                marginRight: 100,
+		                plotBackgroundColor: "#b3d4fc",
+		                plotShadow: true,
+		             
+		                events: {
+		                    load: function() {
+		    
+		                        // set up the updating of the chart each second
+		                        var series = this.series[0];
+		                        var series2 = this.series[1];
+		                
+		                          ID = setInterval(PC, 2000);
+
+		                          function PC() {
+		                        
+		                        	$.getJSON("http://127.0.0.1:3000/myjsonp/all",function(data){
+		                        		console.log("memused:"+data.result["%memused"]);	
+		                        		console.log("cpu:"+data.result["CPU_all_%idle"]);	
+		                        		var x = (new Date()).getTime(), // current time
+
+		                                y = typeof(data.result["%memused"]) != "undefined" ? 100.0-parseFloat(data.result["%memused"].replace(",", ".")) : null	;
+		                                
+		                                z = typeof(data.result["CPU_all_%idle"]) != "undefined" ? 100.0-parseFloat(data.result["CPU_all_%idle"].replace(",", ".")) : null	;
+		                                series.addPoint([x, y], true, true);	
+		                                series2.addPoint([x, z], true, true);
+
+		                        	})
+		                        }
+		                    }
+		                }
+		            },
+		            labels:{
+			            items:[{  
+			                html:'即時監控伺服器資源',  
+			                style:{left:'100px',top:'60px'}  
+			            }]  
+			        },  
+			        credits:{//右下角
+			            enabled: true,  
+			            position: {//位置设置  
+			                align: 'right',  
+			                x: -100,  
+			                y: 0  
+			            },  
+			            href: "http://127.0.0.1:3000/",// 
+			            style: {  
+			                color:'blue'  
+			            },  
+			            text: "My Web App"
+			        }, 	
+
+		            title: {
+		                text: '資源監視器'
+		            },
+		            xAxis: {
+		                type: 'datetime',
+		                tickPixelInterval: 150,
+		                //lineColor: "red",
+		                title: {
+		                    text: '時間'
+		                }
+
+		            },
+		            yAxis: {
+		                title: {
+		                    text: '百分比'
+		                },
+		                plotLines: [{
+		                    value: 0,
+		                    width: 1,
+		                    color: 'red'
+		                }],
+		                //gridLineColor: "red"
+		                max: 100,
+		                //minorTickInterval:5, 
+		                min: -10
+
+
+		            },
+		            tooltip: {
+		            	 //valueSuffix: '%',       
+		            	//backgroundColor: '#b3d4fc',  
+		            	style: {  //提示框内容的样式
+        					//color: 'white',
+        					padding: '10px',    //内边距 (这个会常用到)
+        					fontSize: '12pt',           
+    					},
+
+		                formatter: function() {
+		                        return '<b>'+ this.series.name +'</b><br/>'+
+		                        Highcharts.numberFormat(this.y, 2)+"%";
+		                }          
+		            },
+		            legend: {
+		                enabled: false
+		            },
+		            exporting: {
+		                enabled: false
+		            },
+		            series: [{
+		            	connectNulls: true,
+		                name: '記憶體可用空間',
+		                data: (function() {
+		                    // generate an array of random data
+		                    var data = [],
+		                        time = (new Date()).getTime(),
+		                        i;
+
+		                    for (i = -6; i <= 0; i++) {
+		                    	console.log(time + i * 1000);
+		                        data.push({
+		                              x: time + i * 1000,
+		                              y: 0
+		                        });
+		                    }
+		                    return data;
+		                })()
+
+		            },
+		            {
+		            	connectNulls: true,
+		                name: 'CPU使用率',
+		                data: (function() {
+		                    // generate an array of random data
+		                    var data = [],
+		                        time = (new Date()).getTime(),
+		                        i;
+
+		                    for (i = -6; i <= 0; i++) {
+		                    	console.log(time + i * 1000);
+		                        data.push({
+		                              x: time + i * 1000,
+		                              y: 0
+		                        });
+		                    }
+		                    return data;
+		                })()
+
+		            }]
+		        });//container
+
+	    }//start
+ 		 </script>         
+    </body>
+</html>
