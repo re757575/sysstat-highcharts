@@ -82,20 +82,22 @@ $(function () {
 	    		var chart;
 		        $('#container').highcharts({
 		            chart: {
-		                type: 'line',
+		                type: 'spline',//line,spline, scatter, splinearea bar,pie,area,column
 		                animation: Highcharts.svg, // don't animate in old IE
 		                marginRight: 100,
-		                plotBackgroundColor: "#b3d4fc",
+		                plotBackgroundColor: 'rgba(0, 150, 255, .2)', 
 		                plotShadow: true,
-		             
+		                borderWidth: 0,
+		             	plotBorderWidth: 1, 
 		                events: {
 		                    load: function() {
 		    
 		                        // set up the updating of the chart each second
 		                        var series = this.series[0];
 		                        var series2 = this.series[1];
-		                
-		                          ID = setInterval(PC, 2000);
+
+		                          ID = setInterval(PC,1500);
+
 
 		                          function PC() {
 		                        
@@ -107,11 +109,12 @@ $(function () {
 		                                y = typeof(data.result["%memused"]) != "undefined" ? 100.0-parseFloat(data.result["%memused"].replace(",", ".")) : null	;
 		                                
 		                                z = typeof(data.result["CPU_all_%idle"]) != "undefined" ? 100.0-parseFloat(data.result["CPU_all_%idle"].replace(",", ".")) : null	;
-		                                series.addPoint([x, y], true, true);	
-		                                series2.addPoint([x, z], true, true);
+		                                series.addPoint([x, y], true, false);	
+		                                series2.addPoint([x, z], true, false);
 
 		                        	})
 		                        }
+	
 		                    }
 		                }
 		            },
@@ -130,6 +133,7 @@ $(function () {
 			            },  
 			            href: "http://127.0.0.1:3000/",// 
 			            style: {  
+			            	fontSize: '12pt', 
 			                color:'blue'  
 			            },  
 			            text: "My Web App"
@@ -141,10 +145,16 @@ $(function () {
 		            xAxis: {
 		                type: 'datetime',
 		                tickPixelInterval: 150,
+
 		                //lineColor: "red",
 		                title: {
 		                    text: '時間'
-		                }
+		                },
+		                maxPadding : 0.05,  
+			            minPadding : 0.05,  
+			            tickWidth:1,
+			            lineWidth :1
+		                //minorGridLineColor:'red'
 
 		            },
 		            yAxis: {
@@ -154,15 +164,16 @@ $(function () {
 		                plotLines: [{
 		                    value: 0,
 		                    width: 1,
-		                    color: 'red'
+		                    //color: 'red'
 		                }],
 		                //gridLineColor: "red"
 		                max: 100,
 		                //minorTickInterval:5, 
-		                min: -10
-
+		                min: -10,
+		                tickInterval:20 // 刻度
 
 		            },
+
 		            tooltip: {
 		            	 //valueSuffix: '%',       
 		            	//backgroundColor: '#b3d4fc',  
@@ -174,6 +185,7 @@ $(function () {
 
 		                formatter: function() {
 		                        return '<b>'+ this.series.name +'</b><br/>'+
+		                         Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
 		                        Highcharts.numberFormat(this.y, 2)+"%";
 		                }          
 		            },
@@ -192,7 +204,7 @@ $(function () {
 		                        time = (new Date()).getTime(),
 		                        i;
 
-		                    for (i = -6; i <= 0; i++) {
+		                    for (i = -3; i <= 0; i++) {
 		                    	console.log(time + i * 1000);
 		                        data.push({
 		                              x: time + i * 1000,
@@ -212,7 +224,7 @@ $(function () {
 		                        time = (new Date()).getTime(),
 		                        i;
 
-		                    for (i = -6; i <= 0; i++) {
+		                    for (i = -3; i <= 0; i++) {
 		                    	console.log(time + i * 1000);
 		                        data.push({
 		                              x: time + i * 1000,
